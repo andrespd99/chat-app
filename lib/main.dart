@@ -1,3 +1,4 @@
+import 'package:chat/consts.dart';
 import 'package:chat/pages/login_page.dart';
 import 'package:chat/pages/users_page.dart';
 import 'package:chat/routes/routes.dart';
@@ -17,20 +18,28 @@ class MyApp extends StatelessWidget {
       initialRoute: LoginPage.routeName,
       routes: appRoutes,
       theme: ThemeData(
-        primaryColor: Colors.tealAccent.shade400,
-        colorScheme: Theme.of(context).colorScheme.copyWith(
-              secondary: Colors.black,
-              background: const Color(0xffF2F2F2),
+          colorScheme: Theme.of(context).colorScheme.copyWith(
+                primary: Colors.teal.shade300,
+                secondary: Colors.black,
+                background: const Color(0xffF2F2F2),
+              ),
+          inputDecorationTheme: InputDecorationTheme(
+            filled: true,
+            fillColor: Colors.white,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(30.0),
+              borderSide: BorderSide.none,
             ),
-        inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: Colors.white,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.0),
-            borderSide: BorderSide.none,
           ),
-        ),
-      ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(
+              horizontal: Consts.padding * 1.5,
+              vertical: Consts.padding * 0.6,
+            ),
+            shape: const StadiumBorder(),
+            primary: Colors.black,
+          ))),
     );
   }
 }

@@ -9,19 +9,32 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final heigh = MediaQuery.of(context).size.height -
+        MediaQuery.of(context).padding.vertical;
+
     return Scaffold(
       body: SafeArea(
         child: Container(
-          margin: const EdgeInsets.only(top: 50.0),
-          padding: const EdgeInsets.all(Consts.padding),
-          child: Column(
+          padding: const EdgeInsets.symmetric(horizontal: Consts.padding),
+          height: heigh,
+          child: ListView(
+            // shrinkWrap: true,
             children: [
+              const SizedBox(height: Consts.padding * 2),
               const _Logo(),
               const SizedBox(height: Consts.padding * 2),
               _Form(),
+              const SizedBox(height: Consts.padding * 1.25),
+              ElevatedButton(
+                child: const Text(
+                  'Log in',
+                  style: TextStyle(fontSize: 16.0),
+                ),
+                onPressed: () {},
+              ),
               const SizedBox(height: Consts.padding * 2),
               const _Labels(),
-              const Spacer(),
+              const SizedBox(height: Consts.padding * 3),
               TextButton(
                 child: const Text('Términos y condiciones de uso'),
                 onPressed: () {},
