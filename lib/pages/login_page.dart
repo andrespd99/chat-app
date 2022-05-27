@@ -1,6 +1,11 @@
-import 'package:chat/consts.dart';
-import 'package:chat/widgets/elevated_text_input.dart';
+import 'package:chat/widgets/terms_and_conditions_button.dart';
 import 'package:flutter/material.dart';
+
+import 'package:chat/consts.dart';
+import 'package:chat/validators.dart';
+import 'package:chat/widgets/logo.dart';
+import 'package:chat/widgets/auth_labels.dart';
+import 'package:chat/widgets/elevated_text_input.dart';
 
 class LoginPage extends StatelessWidget {
   static const String routeName = 'login';
@@ -9,40 +14,40 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final heigh = MediaQuery.of(context).size.height -
-        MediaQuery.of(context).padding.vertical;
+    const AuthState authState = AuthState.login;
 
     return Scaffold(
-      body: SafeArea(
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: Consts.padding),
-          height: heigh,
-          child: ListView(
-            // shrinkWrap: true,
-            children: [
-              const SizedBox(height: Consts.padding * 2),
-              const _Logo(),
-              const SizedBox(height: Consts.padding * 2),
-              _Form(),
-              const SizedBox(height: Consts.padding * 1.25),
-              ElevatedButton(
-                child: const Text(
-                  'Log in',
-                  style: TextStyle(fontSize: 16.0),
+      body: LayoutBuilder(
+        builder: (context, constraints) => SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: constraints.maxHeight,
+              minWidth: constraints.maxWidth,
+            ),
+            child: IntrinsicHeight(
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(Consts.padding),
+                  child: Column(
+                    // shrinkWrap: true,
+                    mainAxisSize: MainAxisSize.max,
+                    children: const [
+                      SizedBox(height: Consts.padding * 2),
+                      Logo(),
+                      SizedBox(height: Consts.padding * 2),
+                      _Form(),
+                      SizedBox(height: Consts.padding * 1.25),
+                      _LoginButton(),
+                      SizedBox(height: Consts.padding * 2),
+                      AuthLabels(authState),
+                      SizedBox(height: Consts.padding * 3),
+                      Spacer(),
+                      TermsAndConditionsTextButton()
+                    ],
+                  ),
                 ),
-                onPressed: () {},
               ),
-              const SizedBox(height: Consts.padding * 2),
-              const _Labels(),
-              const SizedBox(height: Consts.padding * 3),
-              TextButton(
-                child: const Text('Términos y condiciones de uso'),
-                onPressed: () {},
-                style: TextButton.styleFrom(
-                  primary: Colors.grey.shade600,
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),
@@ -50,35 +55,8 @@ class LoginPage extends StatelessWidget {
   }
 }
 
-class _Logo extends StatelessWidget {
-  const _Logo({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        children: const [
-          Image(
-            image: AssetImage('assets/logo.png'),
-            fit: BoxFit.cover,
-            height: 100.0,
-          ),
-          SizedBox(height: 20.0),
-          Text(
-            'Woosh!',
-            style: TextStyle(
-              fontSize: 30.0,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _Form extends StatefulWidget {
-  _Form({Key? key}) : super(key: key);
+  const _Form({Key? key}) : super(key: key);
 
   @override
   State<_Form> createState() => __FormState();
@@ -99,21 +77,29 @@ class __FormState extends State<_Form> {
           ElevatedTextField(
             TextFormField(
               controller: _emailController,
+              textInputAction: TextInputAction.next,
               keyboardType: TextInputType.emailAddress,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              validator: (value) => Validators.checkEmail(value),
               decoration: const InputDecoration(
                 labelText: 'Email',
                 prefixIcon: Icon(Icons.mail_outline),
+                errorMaxLines: 10,
               ),
             ),
           ),
           const SizedBox(height: Consts.padding),
           ElevatedTextField(
             TextFormField(
-              controller: _passwordController,
               obscureText: true,
+              controller: _passwordController,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              validator: (value) =>
+                  (value!.isEmpty) ? 'Enter your password' : null,
               decoration: const InputDecoration(
                 labelText: 'Password',
                 prefixIcon: Icon(Icons.lock_outline_rounded),
+                errorMaxLines: 10,
               ),
             ),
           ),
@@ -123,24 +109,19 @@ class __FormState extends State<_Form> {
   }
 }
 
-class _Labels extends StatelessWidget {
-  const _Labels({Key? key}) : super(key: key);
+class _LoginButton extends StatelessWidget {
+  const _LoginButton({
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Text(
-          '¿No tienes una cuenta?',
-          style: TextStyle(
-            fontWeight: FontWeight.w200,
-          ),
-        ),
-        TextButton(
-          child: const Text('Registrarse'),
-          onPressed: () {},
-        ),
-      ],
+    return ElevatedButton(
+      child: const Text(
+        'Log in',
+        style: TextStyle(fontSize: 16.0),
+      ),
+      onPressed: () {},
     );
   }
 }

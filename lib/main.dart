@@ -1,8 +1,9 @@
-import 'package:chat/consts.dart';
-import 'package:chat/pages/login_page.dart';
-import 'package:chat/pages/users_page.dart';
-import 'package:chat/routes/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import 'package:chat/consts.dart';
+import 'package:chat/routes/routes.dart';
+import 'package:chat/pages/login_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
       initialRoute: LoginPage.routeName,
       routes: appRoutes,
       theme: ThemeData(
+          textTheme: GoogleFonts.ptSansTextTheme(),
           colorScheme: Theme.of(context).colorScheme.copyWith(
                 primary: Colors.teal.shade300,
                 secondary: Colors.black,
