@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:chat/consts.dart';
 import 'package:chat/routes/routes.dart';
-import 'package:chat/pages/login_page.dart';
+import 'package:chat/pages/users_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       builder: (context, child) => Material(
         child: child,
       ),
-      initialRoute: LoginPage.routeName,
+      initialRoute: UsersPage.routeName,
       routes: appRoutes,
       theme: ThemeData(
           textTheme: GoogleFonts.ptSansTextTheme(),
