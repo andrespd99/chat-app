@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:chat/services/auth_service.dart';
 
 import 'package:chat/consts.dart';
 import 'package:chat/validators.dart';
 import 'package:chat/widgets/logo.dart';
+import 'package:chat/functions/functions.dart';
 import 'package:chat/widgets/auth_labels.dart';
 import 'package:chat/widgets/elevated_text_input.dart';
 import 'package:chat/widgets/terms_and_conditions_button.dart';
@@ -34,13 +37,18 @@ class SignupPage extends StatelessWidget {
                     children: const [
                       SizedBox(height: Consts.padding * 2),
                       Logo(),
+                      SizedBox(height: Consts.padding),
+                      Text(
+                        'Create account',
+                        style: TextStyle(
+                          fontSize: 30.0,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                       SizedBox(height: Consts.padding * 2),
                       _Form(),
-                      SizedBox(height: Consts.padding * 1.25),
-                      _SignUpButton(),
                       SizedBox(height: Consts.padding * 2),
                       AuthLabels(authState),
-                      SizedBox(height: Consts.padding * 3),
                       Spacer(),
                       TermsAndConditionsTextButton(),
                     ],
@@ -65,8 +73,14 @@ class _Form extends StatefulWidget {
 class __FormState extends State<_Form> {
   final _formKey = GlobalKey<FormState>();
 
+  final _nameController = TextEditingController();
+  String get name => _nameController.text;
+
   final _emailController = TextEditingController();
+  String get email => _emailController.text;
+
   final _passwordController = TextEditingController();
+  String get password => _passwordController.text;
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +90,23 @@ class __FormState extends State<_Form> {
         children: [
           ElevatedTextField(
             TextFormField(
+              controller: _nameController,
+              onChanged: (value) => setState(() {}),
+              textInputAction: TextInputAction.next,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              validator: (value) => Validators.checkName(value),
+              decoration: const InputDecoration(
+                labelText: 'Full name',
+                prefixIcon: Icon(Icons.person_outline),
+                errorMaxLines: 10,
+              ),
+            ),
+          ),
+          const SizedBox(height: Consts.padding),
+          ElevatedTextField(
+            TextFormField(
               controller: _emailController,
+              onChanged: (value) => setState(() {}),
               textInputAction: TextInputAction.next,
               keyboardType: TextInputType.emailAddress,
               autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -92,6 +122,7 @@ class __FormState extends State<_Form> {
           ElevatedTextField(
             TextFormField(
               obscureText: true,
+              onChanged: (value) => setState(() {}),
               controller: _passwordController,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               validator: (value) => Validators.checkPassword(value),
@@ -102,17 +133,36 @@ class __FormState extends State<_Form> {
               ),
             ),
           ),
+          const SizedBox(height: Consts.padding * 1.25),
+          _SignUpButton(
+            name: name,
+            email: email,
+            password: password,
+          ),
         ],
       ),
     );
   }
 }
 
-class _SignUpButton extends StatelessWidget {
+class _SignUpButton extends StatefulWidget {
+  final String name;
+  final String email;
+  final String password;
+
   const _SignUpButton({
+    required this.name,
+    required this.email,
+    required this.password,
     Key? key,
   }) : super(key: key);
 
+  @override
+  State<_SignUpButton> createState() => _SignUpButtonState();
+}
+
+class _SignUpButtonState extends State<_SignUpButton> {
+  bool _isLoading = false;
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
@@ -120,7 +170,35 @@ class _SignUpButton extends StatelessWidget {
         'Create account',
         style: TextStyle(fontSize: 16.0),
       ),
-      onPressed: () {},
+      onPressed: _isLoading
+          ? null
+          : () {
+              if (Form.of(context)!.validate()) {
+                setState(() {
+                  _isLoading = true;
+                });
+                context
+                    .read<AuthService>()
+                    .createAccountWithEmailAndPassword(
+                      name: widget.name,
+                      email: widget.email,
+                      password: widget.password,
+                    )
+                    .then((value) {
+                  setState(() {
+                    _isLoading = false;
+                  });
+                }).catchError((error) {
+                  setState(() {
+                    _isLoading = false;
+                  });
+                  showCustomDialog(
+                    context,
+                    subtitle: error,
+                  );
+                });
+              }
+            },
     );
   }
 }

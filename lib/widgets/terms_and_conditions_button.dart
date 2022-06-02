@@ -8,7 +8,7 @@ class TermsAndConditionsTextButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      child: const Text('Términos y condiciones de uso'),
+      child: const Text('Terms and conditions'),
       onPressed: () {},
       style: TextButton.styleFrom(
         primary: Colors.grey.shade600,

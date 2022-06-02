@@ -16,13 +16,13 @@ class AuthLabels extends StatelessWidget {
       return Column(
         children: [
           const Text(
-            '¿No tienes una cuenta?',
+            "Not registered yet?",
             style: TextStyle(
               fontWeight: FontWeight.w200,
             ),
           ),
           TextButton(
-            child: const Text('Registrarse'),
+            child: const Text('Create an account'),
             onPressed: () =>
                 Navigator.popAndPushNamed(context, SignupPage.routeName),
           ),
@@ -33,13 +33,13 @@ class AuthLabels extends StatelessWidget {
     return Column(
       children: [
         const Text(
-          '¿Ya estás registrado?',
+          'Already have an account?',
           style: TextStyle(
             fontWeight: FontWeight.w200,
           ),
         ),
         TextButton(
-          child: const Text('Inicia sesión'),
+          child: const Text('Log in'),
           onPressed: () =>
               Navigator.popAndPushNamed(context, LoginPage.routeName),
         ),

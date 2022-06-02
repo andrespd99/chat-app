@@ -13,14 +13,6 @@ class Logo extends StatelessWidget {
             fit: BoxFit.cover,
             height: 100.0,
           ),
-          SizedBox(height: 20.0),
-          Text(
-            'Woosh!',
-            style: TextStyle(
-              fontSize: 30.0,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
         ],
       ),
     );

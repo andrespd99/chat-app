@@ -1,28 +1,37 @@
+import 'package:chat/pages/loading_page.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:chat/consts.dart';
 import 'package:chat/routes/routes.dart';
-import 'package:chat/pages/chat_page.dart';
-import 'package:chat/pages/users_page.dart';
+import 'package:chat/pages/login_page.dart';
+import 'package:chat/services/auth_service.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Chat App',
-      builder: (context, child) => GestureDetector(
-        onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
-        child: Material(
-          child: child,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => AuthService(),
         ),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Chat App',
+        builder: (context, child) => GestureDetector(
+          onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
+          child: Material(
+            child: child,
+          ),
+        ),
+        initialRoute: LoadingPage.routeName,
+        routes: appRoutes,
+        theme: _customTheme(context),
       ),
-      initialRoute: ChatPage.routeName,
-      routes: appRoutes,
-      theme: _customTheme(context),
     );
   }
 

@@ -5,11 +5,28 @@ class Validators {
     caseSensitive: false,
   );
 
+  /// Validates that the value is a valid name.
+  static final RegExp _goodNameFormat = RegExp(r'^[a-zA-Z]+$');
+
+  /// Checks if name is valid.
+  /// A valid name is non-empty and contains only alphabetic characters.
+  /// Returns an error message if the name is invalid.
+  static String? checkName(String? name) {
+    if (name == null || name.isEmpty) {
+      return 'Enter a name';
+    }
+    if (!_goodNameFormat.hasMatch(name)) {
+      return 'Name must contain only alphabetic characters.';
+    }
+
+    return null;
+  }
+
   /// Checks if email is valid. If it is, returns `null`, otherwise returns an error message.
   static String? checkEmail(String? email) {
     /// If email is empty.
     if (email == null || email.isEmpty) {
-      return 'Email is required';
+      return 'Name is required';
     }
 
     /// If email is not valid.
@@ -24,7 +41,7 @@ class Validators {
   static String? checkPassword(String? password) {
     /// If email is empty.
     if (password == null || password.isEmpty) {
-      return 'Enter a password';
+      return 'Password is required';
     }
 
     /// If email is not valid.
