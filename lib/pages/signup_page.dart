@@ -194,7 +194,7 @@ class _SignUpButtonState extends State<_SignUpButton> {
                   });
                   showCustomDialog(
                     context,
-                    subtitle: error,
+                    subtitle: error.toString(),
                   );
                 });
               }
