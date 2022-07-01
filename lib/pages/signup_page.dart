@@ -1,3 +1,4 @@
+import 'package:chat/services/socket_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:chat/services/auth_service.dart';
@@ -189,9 +190,14 @@ class _SignUpButtonState extends State<_SignUpButton> {
                     _isLoading = false;
                   });
                 }).catchError((error) {
+                  context.read<SocketService>().connect();
+
+                  Navigator.pushReplacementNamed(context, SignupPage.routeName);
+
                   setState(() {
                     _isLoading = false;
                   });
+
                   showCustomDialog(
                     context,
                     subtitle: error.toString(),

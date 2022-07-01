@@ -1,12 +1,12 @@
-import 'package:chat/pages/loading_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:chat/consts.dart';
 import 'package:chat/routes/routes.dart';
-import 'package:chat/pages/login_page.dart';
+import 'package:chat/pages/loading_page.dart';
 import 'package:chat/services/auth_service.dart';
+import 'package:chat/services/socket_service.dart';
 
 void main() => runApp(MyApp());
 
@@ -17,6 +17,9 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create: (_) => AuthService(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => SocketService(),
         ),
       ],
       child: MaterialApp(

@@ -1,6 +1,7 @@
 import 'package:chat/functions/functions.dart';
 import 'package:chat/pages/users_page.dart';
 import 'package:chat/services/auth_service.dart';
+import 'package:chat/services/socket_service.dart';
 import 'package:chat/widgets/terms_and_conditions_button.dart';
 import 'package:flutter/material.dart';
 
@@ -164,7 +165,11 @@ class _LoginButtonState extends State<_LoginButton> {
                     .read<AuthService>()
                     .login(widget.email, widget.password)
                     .then((value) {
+                  // Connect to socket server.
+                  context.read<SocketService>().connect();
+
                   Navigator.pushReplacementNamed(context, UsersPage.routeName);
+
                   setState(() {
                     _isLoading = false;
                   });
@@ -172,6 +177,7 @@ class _LoginButtonState extends State<_LoginButton> {
                   setState(() {
                     _isLoading = false;
                   });
+
                   showCustomDialog(
                     context,
                     subtitle: error.toString(),

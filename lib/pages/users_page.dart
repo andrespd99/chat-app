@@ -1,3 +1,4 @@
+import 'package:chat/consts.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -5,6 +6,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:chat/models/user.dart';
 import 'package:chat/pages/login_page.dart';
 import 'package:chat/services/auth_service.dart';
+import 'package:chat/services/socket_service.dart';
 
 class UsersPage extends StatefulWidget {
   static const String routeName = 'users';
@@ -31,7 +33,7 @@ class _UsersPageState extends State<UsersPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('${user!.name}'),
+        title: Text(user!.name),
         titleTextStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
               color: Colors.black87,
             ),
@@ -41,11 +43,19 @@ class _UsersPageState extends State<UsersPage> {
           icon: const Icon(Icons.exit_to_app_outlined),
           color: Colors.black,
           onPressed: () {
-            // TODO: Disconnect from socket.
+            context.read<SocketService>().disconnect();
+
             Navigator.pushReplacementNamed(context, LoginPage.routeName);
+
             context.read<AuthService>().logOut();
           },
         ),
+        actions: [
+          Container(
+            padding: const EdgeInsets.only(right: Consts.padding / 2),
+            child: connectionStatusIcon(),
+          ),
+        ],
       ),
       body: SmartRefresher(
         controller: _refreshController,
@@ -63,7 +73,28 @@ class _UsersPageState extends State<UsersPage> {
     );
   }
 
-  Future<dynamic> _loadUsers() => Future.delayed(Duration(seconds: 5));
+  Future<dynamic> _loadUsers() => Future.delayed(const Duration(seconds: 5));
+
+  Icon connectionStatusIcon() {
+    ServerStatus status = context.watch<SocketService>().serverStatus;
+
+    if (status == ServerStatus.connecting) {
+      return const Icon(
+        Icons.offline_bolt,
+        color: Colors.amberAccent,
+      );
+    } else if (status == ServerStatus.online) {
+      return Icon(
+        Icons.check_circle,
+        color: Colors.blue.shade400,
+      );
+    } else {
+      return const Icon(
+        Icons.offline_bolt,
+        color: Colors.grey,
+      );
+    }
+  }
 }
 
 class _UserListTile extends StatelessWidget {
