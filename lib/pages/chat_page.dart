@@ -1,7 +1,9 @@
 import 'package:chat/consts.dart';
 import 'package:chat/models/chat_message.dart';
 import 'package:chat/models/user.dart';
+import 'package:chat/services/auth_service.dart';
 import 'package:chat/services/chat_service.dart';
+import 'package:chat/services/socket_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -18,72 +20,110 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   List<ChatMessage> messages = [];
 
+  late ChatService chatService;
+  late SocketService socketService;
+  late AuthService authService;
+
+  final Duration duration = const Duration(milliseconds: 300);
+
+  @override
+  void initState() {
+    chatService = Provider.of<ChatService>(context, listen: false);
+    socketService = Provider.of<SocketService>(context, listen: false);
+    authService = Provider.of<AuthService>(context, listen: false);
+
+    socketService.socket.on('private-message', listenToMessages);
+    super.initState();
+  }
+
+  void listenToMessages(dynamic data) {
+    final message = ChatMessage(
+      uid: data['from'],
+      text: data['message'],
+      controller: AnimationController(vsync: this, duration: duration),
+    );
+
+    setState(() {
+      messages.insert(0, message);
+    });
+
+    message.controller.forward().then((value) => message.controller.dispose());
+  }
+
   @override
   Widget build(BuildContext context) {
-    final chatService = Provider.of<ChatService>(context);
     final User user = chatService.to!;
 
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 100.0,
-        backgroundColor: Colors.white,
-        title: Column(
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          toolbarHeight: 100.0,
+          backgroundColor: Colors.white,
+          title: Column(
+            children: [
+              CircleAvatar(
+                child: Text(user.name.substring(0, 2)),
+                backgroundColor: Colors.blue.shade100,
+              ),
+              const SizedBox(height: Consts.padding / 4),
+              Text(
+                user.name,
+                style: TextStyle(color: Colors.black),
+              ),
+            ],
+          ),
+          centerTitle: true,
+          elevation: 0,
+        ),
+        body: Column(
           children: [
-            CircleAvatar(
-              child: Text(user.name.substring(0, 2)),
-              backgroundColor: Colors.blue.shade100,
+            Flexible(
+              child: ListView.separated(
+                reverse: true,
+                itemCount: messages.length,
+                itemBuilder: (_, i) => ChatMessageWidget(messages[i]),
+                separatorBuilder: (_, i) => const SizedBox(height: 8.0),
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+              ),
             ),
-            const SizedBox(height: Consts.padding / 4),
-            Text(
-              user.name,
-              style: TextStyle(color: Colors.black),
+            const SizedBox(height: 8.0),
+            BottomInputBox(
+              onMessageSent: (text) => _onMessageSent(text),
             ),
           ],
         ),
-        centerTitle: true,
-        elevation: 0,
-      ),
-      body: Column(
-        children: [
-          Flexible(
-            child: ListView.separated(
-              reverse: true,
-              itemCount: messages.length,
-              itemBuilder: (_, i) => ChatMessageWidget(messages[i]),
-              separatorBuilder: (_, i) => const SizedBox(height: 8.0),
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            ),
-          ),
-          const SizedBox(height: 8.0),
-          BottomInputBox(
-            onMessageSent: (text) => _onMessageSent(text),
-          ),
-        ],
       ),
     );
   }
 
   void _onMessageSent(String text) {
+    text = text.trim();
+    if (text.isEmpty) return;
+
     final newMessage = ChatMessage(
       uid: '123',
       text: text,
       controller: AnimationController(
         vsync: this,
-        duration: const Duration(milliseconds: 300),
+        duration: duration,
       ),
     );
     messages.insert(0, newMessage);
     newMessage.controller.forward();
+
     setState(() {});
+    socketService.emit('private-message', {
+      'from': authService.currentUser?.uid,
+      'message': text,
+      'to': chatService.to?.uid,
+      'epoch': DateTime.now().millisecondsSinceEpoch,
+    });
   }
 
   @override
   void dispose() {
-    // TODO: Off del socket
-
-    for (ChatMessage m in messages) {
-      m.controller.dispose();
-    }
+    socketService.socket.off('private-message');
 
     super.dispose();
   }
