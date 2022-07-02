@@ -1,4 +1,7 @@
 import 'package:chat/consts.dart';
+import 'package:chat/pages/chat_page.dart';
+import 'package:chat/services/chat_service.dart';
+import 'package:chat/services/users_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -18,13 +21,17 @@ class UsersPage extends StatefulWidget {
 }
 
 class _UsersPageState extends State<UsersPage> {
+  final userService = UsersService();
+
   final RefreshController _refreshController = RefreshController();
 
-  final users = [
-    User(uid: '1', name: 'Maria', email: 'test1@test.com', online: true),
-    User(uid: '2', name: 'Andres', email: 'test2@test.com', online: false),
-    User(uid: '3', name: 'José', email: 'test3@test.com', online: true),
-  ];
+  final List<User> users = [];
+
+  @override
+  void initState() {
+    _loadUsers();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +80,11 @@ class _UsersPageState extends State<UsersPage> {
     );
   }
 
-  Future<dynamic> _loadUsers() => Future.delayed(const Duration(seconds: 5));
+  Future<dynamic> _loadUsers() async {
+    users.clear();
+    users.addAll(await userService.getUsers());
+    setState(() {});
+  }
 
   Icon connectionStatusIcon() {
     ServerStatus status = context.watch<SocketService>().serverStatus;
@@ -113,11 +124,19 @@ class _UserListTile extends StatelessWidget {
         backgroundColor: user.color,
         child: Text(user.name.substring(0, 2)),
       ),
+      subtitle: Text(user.email),
       trailing: CircleAvatar(
         backgroundColor:
             user.online ? Colors.greenAccent.shade400 : Colors.grey.shade300,
         radius: 5,
       ),
+      onTap: () {
+        final chatService = Provider.of<ChatService>(context, listen: false);
+
+        chatService.to = user;
+
+        Navigator.pushNamed(context, ChatPage.routeName);
+      },
     );
   }
 }

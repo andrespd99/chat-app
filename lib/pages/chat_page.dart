@@ -1,7 +1,10 @@
 import 'package:chat/consts.dart';
 import 'package:chat/models/chat_message.dart';
+import 'package:chat/models/user.dart';
+import 'package:chat/services/chat_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class ChatPage extends StatefulWidget {
   static const String routeName = 'chat';
@@ -17,6 +20,9 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final chatService = Provider.of<ChatService>(context);
+    final User user = chatService.to!;
+
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 100.0,
@@ -24,12 +30,12 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         title: Column(
           children: [
             CircleAvatar(
-              child: Text('Te'),
+              child: Text(user.name.substring(0, 2)),
               backgroundColor: Colors.blue.shade100,
             ),
             const SizedBox(height: Consts.padding / 4),
-            const Text(
-              'Tertulio',
+            Text(
+              user.name,
               style: TextStyle(color: Colors.black),
             ),
           ],

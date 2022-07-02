@@ -1,3 +1,4 @@
+import 'package:chat/services/chat_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -20,6 +21,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => SocketService(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ChatService(),
         ),
       ],
       child: MaterialApp(
